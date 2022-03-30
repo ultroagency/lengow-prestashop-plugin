@@ -1175,6 +1175,7 @@ class LengowImportOrder
         // get billing data
         $billingData = LengowAddress::extractAddressDataFromAPI($this->orderData->billing_address);
         // create customer based on billing data
+        if empty($billing_data['email']) {
         // generation of fictitious email
         $domain = !LengowMain::getHost() ? 'prestashop.shop' : LengowMain::getHost();
         $billingData['email'] = $this->marketplaceSku . '-' . $this->marketplace->name . '@' . $domain;
@@ -1184,6 +1185,8 @@ class LengowImportOrder
             $this->logOutput,
             $this->marketplaceSku
         );
+        }
+
         // update Lengow order with customer name
         $customer = $this->getCustomer($billingData);
         if (!$customer->id) {

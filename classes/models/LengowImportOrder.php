@@ -1172,10 +1172,11 @@ class LengowImportOrder
         $cartData = array();
         $cartData['id_lang'] = $this->idLang;
         $cartData['id_shop'] = $this->idShop;
-        // get billing data
+        // get billing and shipping data
         $billingData = LengowAddress::extractAddressDataFromAPI($this->orderData->billing_address);
+        $shippingData = LengowAddress::extractAddressDataFromAPI($this->packageData->delivery);
         // create customer based on billing data
-        if empty($billing_data['email']) {
+        if (empty($shippingData['email'])) {
         // generation of fictitious email
         $domain = !LengowMain::getHost() ? 'prestashop.shop' : LengowMain::getHost();
         $billingData['email'] = $this->marketplaceSku . '-' . $this->marketplace->name . '@' . $domain;
@@ -1185,6 +1186,8 @@ class LengowImportOrder
             $this->logOutput,
             $this->marketplaceSku
         );
+        } else {
+            $billingData['email'] = $shippingData['email'];
         }
 
         // update Lengow order with customer name
@@ -1202,7 +1205,6 @@ class LengowImportOrder
         }
         $cartData['id_address_invoice'] = $billingAddress->id;
         // shipping
-        $shippingData = LengowAddress::extractAddressDataFromAPI($this->packageData->delivery);
         $this->shippingAddress = $this->getAddress($customer->id, $shippingData, true);
         if (!$this->shippingAddress->id) {
             $this->shippingAddress->id_customer = $customer->id;

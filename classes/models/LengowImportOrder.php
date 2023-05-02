@@ -1392,6 +1392,11 @@ class LengowImportOrder
             }
         }
         $carrier = new Carrier($idCarrier);
+        // FIX id_carrier = 0 if marketplace is "Veepee"
+        if (Validate::isLoadedObject($carrier)) {
+            $matchingFound = true;
+        }
+        // END FIX
         if ($matchingFound) {
             LengowMain::log(
                 LengowLog::CODE_IMPORT,
